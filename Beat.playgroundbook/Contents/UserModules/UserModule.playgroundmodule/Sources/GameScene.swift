@@ -37,8 +37,6 @@ public class GameScene: BasicScene {
             setupWeWillRockYou()
         case 2:
             setupSuperstição()
-//        case 3:
-//            setupVelhoHabito()
         default:
             transitionToEnding()
         }
@@ -49,7 +47,7 @@ public class GameScene: BasicScene {
         
         self.currentSong += 1
     }
-    
+
 }
 
 
@@ -58,7 +56,7 @@ extension GameScene {
     
     func setupDoIWannaKnow() {
         self.song = Song.doIWannaKnow()
-        self.completionWaitDuration = 22
+        self.completionWaitDuration = 24
         
         let bass = self.song.beats[0]
         createPlanet(beat: bass, numberOfCycles: 1, at: CGPoint(x: -size.width/4, y: size.height/16))
@@ -83,26 +81,13 @@ extension GameScene {
         self.completionWaitDuration = 25
         
         let superstiçãoCaixa = self.song.beats[0]
-        createPlanet(beat: superstiçãoCaixa, numberOfCycles: 2, at: CGPoint(x: -size.width/6, y: -size.height/10))
+        createPlanet(beat: superstiçãoCaixa, numberOfCycles: 2, at: CGPoint(x: -size.width/6, y: size.height/10))
         
         let superstiçãoBumbo = self.song.beats[1]
         createPlanet(beat: superstiçãoBumbo, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: size.height/4))
         
-        //        let superstiçãoHighHat = self.song.beats[2]
-        //        createPlanet(musicalInformation: superstiçãoHighHat, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: size.height/16))
-    }
-    
-    func setupVelhoHabito() {
-        self.song = Song.velhoHabito()
-        
-        let velhoHabitoBumbo = self.song.beats[0]
-        createPlanet(beat: velhoHabitoBumbo, numberOfCycles: 1, at: CGPoint(x: -size.width/5, y: 0))
-
-        let velhoHabitoCaixa = self.song.beats[1]
-        createPlanet(beat: velhoHabitoCaixa, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: size.height/4))
-
-//        let velhoHabitoHighHat = self.song.beats[2]
-//        createPlanet(musicalInformation: velhoHabitoHighHat, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: -size.height/4))
+        let superstiçãoHighHat = self.song.beats[2]
+        createPlanet(beat: superstiçãoHighHat, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: -size.height/4))
     }
     
 }

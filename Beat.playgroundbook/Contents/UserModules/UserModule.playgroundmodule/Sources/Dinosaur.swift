@@ -78,8 +78,10 @@ extension Dinosaur {
         if let emitter = SKEmitterNode(fileNamed: "Trace.sks") {
             emitter.particleZPosition = ZPosition.Particle
             emitter.targetNode = self.planet.delegate as! GameScene
+            emitter.position.x = -size.width/2.5
             addChild(emitter)
             traceEmitter = emitter
+            traceEmitter.particleAlpha = 0
         }
     }
     
@@ -140,6 +142,7 @@ extension Dinosaur {
     
     func move(deltaTime: TimeInterval) {
         // Make sure
+        traceEmitter.particleAlpha = 0.2 // Default alpha
         if action(forKey: "stretching") == nil {
             self.run(.scaleX(to: 1.15, duration: Dinosaur.jumpTime/4), withKey: "stretching")
         }

@@ -19,11 +19,6 @@ public class MenuScene: SKScene {
     
     public override func sceneDidLoad() {
         super.sceneDidLoad()
-        
-        // Get rid of lag of playing the first action (dumb I know)
-        let playSoundAction = SKAction.playSoundFileNamed("MenuSelect", waitForCompletion: true)
-        run(playSoundAction)
-        removeAllActions()
 
         setupBackground()
         setupStars()
@@ -42,8 +37,7 @@ extension MenuScene {
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if isReady {
             // Sound effect
-            let playSoundAction = SKAction.playSoundFileNamed("MenuSelect", waitForCompletion: false)
-            run(playSoundAction)
+            AudioManager.shared.playAudio(named: "MenuSelect.wav")
             
             animateOut {
                 self.transitionToGame()
@@ -96,6 +90,9 @@ extension MenuScene {
     }
     
     func setupLogo() {
+        logo = SKSpriteNode(imageNamed: "Logo")
+        logo.zPosition = ZPosition.UserInterface
+        addChild(logo)
 //        logo.setScale(0)
 //
 //        let waitAction = SKAction.wait(forDuration: 0.5)
@@ -106,7 +103,7 @@ extension MenuScene {
     }
     
     func setupTapToStart() {
-        tapToStart = SKSpriteNode(imageNamed: "TapToPlay")
+        tapToStart = SKSpriteNode(imageNamed: "TapToStart")
         tapToStart.position.y = -size.height/4
         tapToStart.zPosition = ZPosition.UserInterface
         addChild(tapToStart)
@@ -116,16 +113,18 @@ extension MenuScene {
 // MARK: Animation
 extension MenuScene {
     func animateIn(completion: @escaping () -> Void) {
-        // Animation
-        tapToStart.setScale(0)
-
-        let waitAction = SKAction.wait(forDuration: 1)
+        
+        logo.setScale(0)
         let scaleUpAction = SKAction.scale(to: 1, duration: 0.5)
-
+        logo.run(.sequence([.wait(forDuration: 1), scaleUpAction]))
+        
+        
+        tapToStart.alpha = 0
         let fadeOutAction = SKAction.fadeOut(withDuration: 1.2)
-        let fadeInAction = SKAction.fadeIn(withDuration: 1.2)
+        let fadeInAction = SKAction.fadeIn(withDuration: 1)
         let blinkAction = SKAction.repeatForever(.sequence([fadeOutAction, fadeInAction]))
-        tapToStart.run(.sequence([waitAction, scaleUpAction])) {
+        
+        tapToStart.run(.sequence([.wait(forDuration: 3), fadeInAction])) {
             self.tapToStart.run(blinkAction)
             completion()
         }
@@ -138,7 +137,7 @@ extension MenuScene {
         
         if logo.action(forKey: "animateOut") == nil {
             logo.run(.sequence([shrinkAction, growAction, goBackToNormalAction]), withKey: "animateOut")
-            tapToStart.run(.sequence([shrinkAction, growAction, goBackToNormalAction])) {
+            tapToStart.run(.sequence([.fadeOut(withDuration: 0.45)])) {
                 completion()
             }
         }

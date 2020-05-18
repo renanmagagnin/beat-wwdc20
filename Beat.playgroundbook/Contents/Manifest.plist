@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ImageReference</key>
-	<string>PurpleBackground.png</string>
+	<string>PlaygroundIcon.png</string>
 	<key>Chapters</key>
 	<array>
 		<string>Chapter1.playgroundchapter</string>
@@ -23,6 +23,6 @@
 	<key>UserAutoImportedAuxiliaryModules</key>
 	<array/>
 	<key>UserModuleMode</key>
-	<string>Full</string>
+	<string>Limited</string>
 </dict>
 </plist>

@@ -48,7 +48,7 @@ public class BasicScene: SKScene {
     var lastUpdateTime: TimeInterval = 0
 
     // PlanetDelegate
-    var waitingPlanet: Planet? = nil
+    var waitingPlanets: [Planet] = []
     var waitingAdditionalLayers: [AdditionalLayer] = []
     
     var completionWaitDuration: TimeInterval = 5
@@ -88,6 +88,11 @@ public class BasicScene: SKScene {
         self.lastUpdateTime = currentTime
     }
     
+    // Planet delegate 
+    func didPlay(_ sender: Planet) {
+        // Consider using this to affect the environment
+    }
+    
     func setupBackground() {
         let texture = SKTexture(imageNamed: BasicScene.backgroundTextureName)
         backgroundNode = SKSpriteNode(texture: texture, color: .clear, size: size)
@@ -110,6 +115,11 @@ public class BasicScene: SKScene {
             }
         } else {
             print("Song is complete")
+            
+            if let emitter = spiritBlastEmitter() {
+                emitter.position = selectedPlanet.position + CGVector.init(dx: 0, dy: selectedPlanet.radius + Dinosaur.size.height/2)
+                emitter.run(.sequence([.wait(forDuration: TimeInterval(emitter.particleLifetime)), .removeFromParent()]))
+            }
             
             let wait = SKAction.wait(forDuration: completionWaitDuration)
             let animateOut = SKAction.run {
@@ -153,7 +163,7 @@ extension BasicScene: PlanetDelegate {
         if sender == planets[0] {
             sender.startRecording()
         } else {
-            waitingPlanet = sender
+            waitingPlanets.append(sender)
         }
     }
     
@@ -161,7 +171,7 @@ extension BasicScene: PlanetDelegate {
         if sender == planets[0] {
             sender.startPlaying()
         } else {
-            waitingPlanet = sender
+            waitingPlanets.append(sender)
         }
         
         // Enqueue new additional layers
@@ -177,8 +187,9 @@ extension BasicScene: PlanetDelegate {
     }
     
     func didStartPlayingCycle(_ sender: Planet) {
-        if let waitingPlanet = waitingPlanet {
-            
+        
+        // Handle any waiting planets
+        for waitingPlanet in waitingPlanets {
             switch waitingPlanet.state {
             case .active:
                 waitingPlanet.startRecording()
@@ -189,10 +200,10 @@ extension BasicScene: PlanetDelegate {
                     waitingPlanet.restartRecording()
                 }
             default:
-                break
+                waitingPlanet.startPlaying()
             }
-            self.waitingPlanet = nil
         }
+        waitingPlanets = []
         
         // Play and dequeue any waiting additional layers
         for layer in waitingAdditionalLayers {
@@ -219,7 +230,6 @@ extension BasicScene {
     }
     
     func destroyPlanet(_ planet: Planet) {
-        planet.explode()
         if let index = planets.firstIndex(of: planet) {
             planets.remove(at: index)
         }
@@ -279,8 +289,7 @@ extension BasicScene: SKPhysicsContactDelegate {
         if let dinosaur = firstBody.node as? Dinosaur, let obstacle = secondBody.node as? Obstacle {
             
             // Sound effect
-            let playSoundAction = SKAction.playSoundFileNamed("HitObstacle", waitForCompletion: false)
-            run(playSoundAction)
+            AudioManager.shared.playAudio(named: "HitObstacle.mp3")
             
             obstacle.impactAnimation()
             
@@ -291,7 +300,7 @@ extension BasicScene: SKPhysicsContactDelegate {
                 if planet == self.planets[0] {
                     planet.restartRecording()
                 } else {
-                    self.waitingPlanet = planet
+                    self.waitingPlanets.append(planet)
                 }
             }
             
@@ -374,11 +383,19 @@ extension BasicScene {
         let origin = originPlanet.position + CGVector(dx: 0, dy: originPlanet.radius + Dinosaur.size.height/2)
         let destination = destinationPlanet.position + CGVector(dx: 0, dy: destinationPlanet.radius + Dinosaur.size.height/2)
         
-        // Performing of animation, calling completion
-        if self.nextPlanet != nil {
-            spiritAnimation(from: origin, to: destination) {
-                completion()
-            }
+        // Calculate movement direction
+        let movementAngle = (destination - origin).radians()
+        
+        // Takeoff blast
+        if let emitter = spiritBlastEmitter() {
+            emitter.position = originPlanet.position + CGVector.init(dx: 0, dy: originPlanet.radius + Dinosaur.size.height/2)
+            emitter.emissionAngle = movementAngle + CGFloat.pi
+            emitter.emissionAngleRange = CGFloat.pi / 3
+            emitter.run(.sequence([.wait(forDuration: TimeInterval(emitter.particleLifetime)), .removeFromParent()]))
+        }
+        
+        spiritAnimation(from: origin, to: destination) {
+            completion()
         }
     }
     
@@ -395,8 +412,8 @@ extension BasicScene {
 }
 
 extension BasicScene {
-    func spiritEmitter() -> SKEmitterNode? {
-        if let emitter = SKEmitterNode(fileNamed: "Spirit.sks") {
+    func particleEmitter(fileNamed fileName: String) -> SKEmitterNode? {
+        if let emitter = SKEmitterNode(fileNamed: fileName) {
             emitter.particleZPosition = ZPosition.Particle
             emitter.targetNode = self
             addChild(emitter)
@@ -405,7 +422,14 @@ extension BasicScene {
         } else {
             return nil
         }
-        
+    }
+    
+    func spiritEmitter() -> SKEmitterNode? {
+        return particleEmitter(fileNamed: "Spirit.sks")
+    }
+    
+    func spiritBlastEmitter() -> SKEmitterNode? {
+        return particleEmitter(fileNamed: "SpiritBlast.sks")
     }
 }
 

@@ -1,37 +1,21 @@
 /*:
  
  - Important:
- Start by reading the instructions and play on full screen mode. Have fun!!
- 
- # Introduction
- ![A Player, his orbs and enemy player with his spikes.](Introduction.png)
- - A player's size represents his current health: the more health a player has, the bigger and slower he is.
- ----
- 
- # Objective
- Survive through waves of enemy players, collect power ups and defeat The Boss.
+ Welcome! Start by reading the instructions below.
  
  ----
  
- # Controls
- ![Analog stick and the abilities bar](Controls.png)
- You move the orange player using the analog stick and manipulate his orbs using the abilites bar.
+ ## Instructions
+ ![The player moving towards an obstacle.](Instructions.png)
+ - Tap anywhere to make the moving player **jump**.
+ - **Avoid obstacles** to complete a cycle.
+ - Make sure to have **sound on** and play on **full screen mode**.
+ - Tap "Run My Code" and have fun!!
  
  ----
- 
- # Power Ups
- - **Instant:** Extra orbs or healing.
- - **Temporary:** Double damage, double orb regeneration or burst of speed.
- - **Upgrades:** More damage or faster orb regeneration.
- 
- ----
- 
- # Credits
- 
- - SpriteKit Analog Stick by [MitrophD](https://github.com/MitrophD)
- - "Nice Kitty" by [Cimba](https://cimba.newgrounds.com/)
  
 */
+
  
 //#-hidden-code
 
