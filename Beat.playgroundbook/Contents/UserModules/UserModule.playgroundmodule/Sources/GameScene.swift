@@ -47,7 +47,7 @@ public class GameScene: BasicScene {
         
         self.currentSong += 1
     }
-    
+
 }
 
 
@@ -56,7 +56,7 @@ extension GameScene {
     
     func setupDoIWannaKnow() {
         self.song = Song.doIWannaKnow()
-        self.completionWaitDuration = 22
+        self.completionWaitDuration = 24
         
         let bass = self.song.beats[0]
         createPlanet(beat: bass, numberOfCycles: 1, at: CGPoint(x: -size.width/4, y: size.height/16))
@@ -88,19 +88,6 @@ extension GameScene {
         
         let superstiçãoHighHat = self.song.beats[2]
         createPlanet(beat: superstiçãoHighHat, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: -size.height/4))
-    }
-    
-    func setupVelhoHabito() {
-        self.song = Song.velhoHabito()
-        
-        let velhoHabitoBumbo = self.song.beats[0]
-        createPlanet(beat: velhoHabitoBumbo, numberOfCycles: 1, at: CGPoint(x: -size.width/5, y: 0))
-
-        let velhoHabitoCaixa = self.song.beats[1]
-        createPlanet(beat: velhoHabitoCaixa, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: size.height/4))
-
-//        let velhoHabitoHighHat = self.song.beats[2]
-//        createPlanet(beat: velhoHabitoHighHat, numberOfCycles: 1, at: CGPoint(x: size.width/4, y: -size.height/4))
     }
     
 }

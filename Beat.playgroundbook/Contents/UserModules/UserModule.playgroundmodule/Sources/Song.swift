@@ -40,10 +40,10 @@ extension Song {
     static func doIWannaKnow() -> Song {
         let doIWannaKnowTranslation = -1
         
-        let bass = Beat(soundEffectFileName: "bassArticMonkeys.m4a", loop: [0, 8], bpm: 85, translation: doIWannaKnowTranslation)
-        let bassAndSnare = Beat(soundEffectFileName: "Bass+SnareArticMonkeys.m4a", loop: [4, 12], bpm: 85, translation: doIWannaKnowTranslation)
+        let bass = Beat(soundEffectFileName: "bassArticMonkeys.m4a", loop: [0, 8], bpm: 85, translation: doIWannaKnowTranslation, volume: 0.7)
+        let bassAndSnare = Beat(soundEffectFileName: "Bass+SnareArticMonkeys.m4a", loop: [4, 12], bpm: 85, translation: doIWannaKnowTranslation, volume: 0.6)
         
-        let additionalLayers = [1: [AdditionalLayer(fileName: "guitarArticMonkeys.m4a", volume: 0.2, delay: TimeInterval(bass.period/16.0) * TimeInterval(10.5))]]
+        let additionalLayers = [1: [AdditionalLayer(fileName: "guitarArticMonkeys.m4a", volume: 0.1, delay: bass.eightNoteDuration * TimeInterval(10.5))]]
         
         return Song(beats: [bass, bassAndSnare], additionalLayers: additionalLayers)
     }
@@ -51,8 +51,8 @@ extension Song {
     static func weWillRockYou() -> Song {
         let weWillRockYouTranslation = 3
         
-        let weWillRockYouBass = Beat(soundEffectFileName: "kick_pozzan.mp3", loop: [0, 2, 8, 10], bpm: 81, translation: weWillRockYouTranslation)
-        let weWillRockYouHat = Beat(soundEffectFileName: "808-clap-1.wav", loop: [4, 12], bpm: 81, translation: weWillRockYouTranslation)
+        let weWillRockYouBass = Beat(soundEffectFileName: "kick_pozzan.mp3", loop: [0, 2, 8, 10], bpm: 81, translation: weWillRockYouTranslation, volume: 0.7)
+        let weWillRockYouHat = Beat(soundEffectFileName: "808-clap-1.wav", loop: [4, 12], bpm: 81, translation: weWillRockYouTranslation, volume: 0.7)
         
         let additionalLayers = [1: [AdditionalLayer(fileName: "We_Will_Rock_You_Vocals.m4a", volume: 0.4, delay: 0.585)]]
         
@@ -62,7 +62,7 @@ extension Song {
     static func superstição() -> Song {
         let superstiçãoTranslation = 3
         
-        let superstiçãoCaixa = Beat(soundEffectFileName: "snare_pozza.mp3", loop: [4, 12], bpm: 115, translation: superstiçãoTranslation, volume: 0.08)
+        let superstiçãoCaixa = Beat(soundEffectFileName: "snare_pozza.mp3", loop: [4, 12], bpm: 115, translation: superstiçãoTranslation, volume: 0.1)
         let superstiçãoBumbo = Beat(soundEffectFileName: "kick_pozzan.mp3", loop: [0, 6, 10], bpm: 115, translation: superstiçãoTranslation, volume: 0.4)
 
         let superstiçãoHighHat = Beat(soundEffectFileName: "hihat_pozzan.mp3", loop: [0, 4 , 8, 12], bpm: 115, translation: superstiçãoTranslation, volume: 0.15)
@@ -83,11 +83,17 @@ extension Song {
     static func velhoHabito() -> Song {
         let velhoHabitoTranslation = 3
         
-        let velhoHabitoBumbo = Beat(soundEffectFileName: "kick_pozzan.mp3", loop: [0, 2, 6, 8, 10, 14], bpm: 100, translation: velhoHabitoTranslation)
-        let velhoHabitoCaixa = Beat(soundEffectFileName: "snare_pozza.mp3", loop: [4, 7, 12], bpm: 100, translation: velhoHabitoTranslation)
-        let velhoHabitoHighHat = Beat(soundEffectFileName: "hihat_pozzan.mp3", loop: [0,2,4,6,8,10,12,14], bpm: 100, translation: velhoHabitoTranslation)
+        let velhoHabitoCaixa = Beat(soundEffectFileName: "snare_pozza.mp3", loop: [4, 7, 12], bpm: 100, translation: velhoHabitoTranslation, volume: 0.07)
+        let velhoHabitoBumbo = Beat(soundEffectFileName: "kick_pozzan.mp3", loop: [0, 2, 6, 8, 10, 14], bpm: 100, translation: velhoHabitoTranslation, volume: 0.10)
+        let velhoHabitoHighHat1 = Beat(soundEffectFileName: "hihat_pozzan.mp3", loop: [2,6,10,14], bpm: 100, translation: velhoHabitoTranslation, volume: 0.08)
+        let velhoHabitoHighHat2 = Beat(soundEffectFileName: "hihat_pozzan.mp3", loop: [0,4,8,12], bpm: 100, translation: velhoHabitoTranslation, volume: 0.08)
         
-        return Song(beats: [velhoHabitoBumbo, velhoHabitoCaixa, velhoHabitoHighHat])
+        let primaryGuitar = AdditionalLayer(fileName: "guitarrabase_e_sintetizador.mp3", volume: 0.13, delay: 1.0)
+        let secondaryGuitar = AdditionalLayer(fileName: "guitarrasolo_e_baixo.mp3", volume: 0.13, delay: 1.0)
+
+        let additionalLayers = [0: [primaryGuitar], 1: [secondaryGuitar]]
+
+        return Song(beats: [velhoHabitoCaixa, velhoHabitoBumbo, velhoHabitoHighHat1, velhoHabitoHighHat2], additionalLayers: additionalLayers)
     }
 
     

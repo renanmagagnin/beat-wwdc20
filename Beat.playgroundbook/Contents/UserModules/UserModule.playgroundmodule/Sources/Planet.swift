@@ -12,9 +12,10 @@ protocol PlanetDelegate {
     var waitingPlanets: [Planet] { get set }
     var waitingAdditionalLayers: [AdditionalLayer] { get set }
     
+    func didFinishRecording(_ sender: Planet)
     func didFinishActivating(_ sender: Planet)
     func didStartPlayingCycle(_ sender: Planet)
-    func didFinishRecording(_ sender: Planet)
+    func didPlay(_ sender: Planet)
 }
 
 
@@ -258,12 +259,18 @@ extension Planet {
     func startPlaying() {
         state = .recorded
         
+        // Adjsut appearance in case the previous states were skipped
+        recordedArcAngle = CGFloat.pi * 2
+        let fadeInDuration: TimeInterval = 1.0
+        bright.run(.fadeIn(withDuration: fadeInDuration))
+        border.run(.fadeIn(withDuration: fadeInDuration))
+        glow.run(.fadeAlpha(to: 0.13, duration: fadeInDuration))
+        
         metronomeCount = 0
         
         // Sound Effect
         
         // Animate (Morph into recorded state)
-        obstacles.forEach({$0.hide()}) // TODO: This should be replaced with explosion
     }
     
 }
@@ -326,19 +333,19 @@ extension Planet {
     
     func explodeObstacles() {
         for obstacle in obstacles {
-            if let emitter = SKEmitterNode(fileNamed: "ObstacleExplosion.sks") {
-                emitter.targetNode = self
-                emitter.position = obstacle.position
+            if let emitter = SKEmitterNode(fileNamed: "ObstacleExplosion.sks"), let scene = self.delegate as? BasicScene {
+                emitter.targetNode = scene
+                emitter.position = position + obstacle.position.vector()
                 emitter.particleZPosition = ZPosition.Particle
-                addChild(emitter)
+                scene.addChild(emitter)
+                
+                emitter.run(.sequence([.wait(forDuration: TimeInterval(emitter.particleLifetime)), .removeFromParent()]))
             }
-            
-            // Sound
-//            AudioManager.shared.playAudio(named: "explosion.mp3", volume: 0.1, shouldLoop: false)
-            
             
             obstacle.removeFromParent()
         }
+        // Sound
+        AudioManager.shared.playAudio(named: "Crumbling.wav", volume: 0.1, shouldLoop: false)
         obstacles = []
     }
 
@@ -350,8 +357,9 @@ extension Planet {
     func play() {
         if canPlay {
             playAnimation()
-
+            
             AudioManager.shared.playAudio(named: beat.soundEffectFileName, volume: beat.volume)
+            delegate?.didPlay(self)
 
             dinosaur?.jump()
             
@@ -366,14 +374,29 @@ extension Planet {
 extension Planet {
     
     func playAnimation() {
-        // Animation
+        
+        // Planet body animation
         let shrink = SKAction.scale(to: 0.8, duration: 0.05)
         shrink.timingMode = .easeInEaseOut
         let expand = SKAction.scale(to: 1.2, duration: 0.12)
         expand.timingMode = .easeInEaseOut
         let reset = SKAction.scale(to: 1, duration: 0.2)
         reset.timingMode = .easeInEaseOut
+        run(.sequence([shrink, expand, reset]))
         
+        // Glow animation
+        //        self.glow.alpha = 0.13
+        let expand2 = SKAction.scale(to: 1.3, duration: 0.2)
+        expand2.timingMode = .easeInEaseOut
+        let fade = SKAction.fadeAlpha(by: 0.10, duration: 0.2)
+        let go = SKAction.group([expand2, fade])
+        
+        let reset2 = SKAction.scale(to: 1, duration: 0.5)
+        let fade2 = SKAction.fadeAlpha(by: -0.10, duration: 0.5)
+        let back = SKAction.group([reset2, fade2])
+        reset2.timingMode = .easeInEaseOut
+        
+        glow?.run(.sequence([go, back]))
         
 
         // Splash animation if already recorded
@@ -384,6 +407,8 @@ extension Planet {
                 emitter.particleScale *= scaleMultiplier
                 emitter.position = self.position
                 scene.addChild(emitter)
+                
+                emitter.run(.sequence([.wait(forDuration: TimeInterval(emitter.particleLifetime)), .removeFromParent()]))
             }
             
             if let emitter = SKEmitterNode(fileNamed: "ThickSplash.sks") {
@@ -392,6 +417,8 @@ extension Planet {
                 emitter.particleScale *= scaleMultiplier
                 emitter.position = self.position
                 scene.addChild(emitter)
+                
+                emitter.run(.sequence([.wait(forDuration: TimeInterval(emitter.particleLifetime)), .removeFromParent()]))
             }
         }
         
@@ -400,12 +427,10 @@ extension Planet {
         let shockwave = SKSpriteNode(texture: .init(imageNamed: "Shockwave"), size: size)
         addChild(shockwave)
         
-        let expand2 = SKAction.scale(to: 2, duration: 0.35)
-        expand2.timingMode = .easeOut
+        let expand3 = SKAction.scale(to: 2, duration: 0.35)
+        expand3.timingMode = .easeOut
         let fadeOut = SKAction.fadeOut(withDuration: 0.35)
-        shockwave.run(.sequence([.wait(forDuration: 0.15), .group([expand2, fadeOut]), .removeFromParent()]))
-        
-        self.run(.sequence([shrink, expand, reset]))
+        shockwave.run(.sequence([.wait(forDuration: 0.15), .group([expand3, fadeOut]), .removeFromParent()]))
     }
 }
 
