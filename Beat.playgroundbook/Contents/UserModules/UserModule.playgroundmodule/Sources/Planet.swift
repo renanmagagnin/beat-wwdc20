@@ -9,7 +9,7 @@
 import SpriteKit
 
 protocol PlanetDelegate {
-    var waitingPlanet: Planet? { get set }
+    var waitingPlanets: [Planet] { get set }
     var waitingAdditionalLayers: [AdditionalLayer] { get set }
     
     func didFinishActivating(_ sender: Planet)
@@ -32,7 +32,7 @@ public class Planet: SKSpriteNode {
     var numberOfCycles: Int
     var period: TimeInterval  // Not necessarily the same as beat since there might be multiple cycles
     
-    var cooldown: TimeInterval = 0.2
+    var cooldown: TimeInterval = 0.18
     var canPlay = true {
         didSet {
             if !canPlay {
@@ -53,7 +53,11 @@ public class Planet: SKSpriteNode {
     
     // State
     var state: PlanetState = .inactive
-    var recordedArcAngle: CGFloat = 0
+    var recordedArcAngle: CGFloat = 0 {
+        didSet {
+            updateBorder()
+        }
+    }
     var isActivating: Bool = false
     var isFinishedRecording: Bool {
         return recordedArcAngle >= 2 * CGFloat.pi
@@ -85,6 +89,7 @@ public class Planet: SKSpriteNode {
         
         setupBright()
         setupGlow()
+        
         setupBorder()
         
         constructObstacles()
@@ -123,12 +128,10 @@ public class Planet: SKSpriteNode {
             let difference = abs(dinosaur.positionAngle - previousPositionAngle)
             recordedArcAngle += difference
             
-            // Update border with new recordedArcAngle
-            updateBorder()
-            
             // Check if recording is complete
             if isFinishedRecording {
                 removeDinosaur()
+                explodeObstacles()
                 
                 delegate?.didFinishRecording(self)
             }
@@ -186,6 +189,8 @@ extension Planet {
         // Border
         border = SKSpriteNode(texture: .init(imageNamed: Planet.borderTextureName), size: size)
         borderCropNode.addChild(border)
+        
+        updateBorder()
     }
     
 }
@@ -207,19 +212,19 @@ extension Planet {
     func activate() {
         if isActivating { return }
         
-        obstacles.forEach({$0.show()})
-        
-        updateBorder()
-        
         isActivating = true
         
+        // Animation
         let fadeInDuration: TimeInterval = 1.0
         bright.run(.fadeIn(withDuration: fadeInDuration))
         border.run(.fadeIn(withDuration: fadeInDuration))
         glow.run(.fadeAlpha(to: 0.13, duration: fadeInDuration))
         
-        // Animate
-        let fadeIn = SKAction.fadeAlpha(to: 1, duration: fadeInDuration)
+        obstacles.forEach({$0.show()})
+        
+        // Spawning animation
+        
+        
         let changeState = SKAction.run({
             self.state = .active
             self.spawnDinosaur()
@@ -318,6 +323,25 @@ extension Planet {
         
         obstacle.position = .zero + position
     }
+    
+    func explodeObstacles() {
+        for obstacle in obstacles {
+            if let emitter = SKEmitterNode(fileNamed: "ObstacleExplosion.sks") {
+                emitter.targetNode = self
+                emitter.position = obstacle.position
+                emitter.particleZPosition = ZPosition.Particle
+                addChild(emitter)
+            }
+            
+            // Sound
+//            AudioManager.shared.playAudio(named: "explosion.mp3", volume: 0.1, shouldLoop: false)
+            
+            
+            obstacle.removeFromParent()
+        }
+        obstacles = []
+    }
+
 }
 
 
@@ -353,12 +377,21 @@ extension Planet {
         
 
         // Splash animation if already recorded
-        if state == .recorded {
+        if state == .recorded, let scene = self.delegate as? BasicScene {
             if let emitter = SKEmitterNode(fileNamed: "Splash.sks") {
-                emitter.targetNode = self
+                emitter.targetNode = scene
                 let scaleMultiplier = max(min((radius - 122)/(186 - 122), 1), 0) + 1
                 emitter.particleScale *= scaleMultiplier
-                addChild(emitter)
+                emitter.position = self.position
+                scene.addChild(emitter)
+            }
+            
+            if let emitter = SKEmitterNode(fileNamed: "ThickSplash.sks") {
+                emitter.targetNode = scene
+                let scaleMultiplier = max(min((radius - 122)/(186 - 122), 0.8), 0) + 1 // 1 to 2
+                emitter.particleScale *= scaleMultiplier
+                emitter.position = self.position
+                scene.addChild(emitter)
             }
         }
         
@@ -373,12 +406,6 @@ extension Planet {
         shockwave.run(.sequence([.wait(forDuration: 0.15), .group([expand2, fadeOut]), .removeFromParent()]))
         
         self.run(.sequence([shrink, expand, reset]))
-    }
-    
-    func explode() {
-        // EXTRA: If there is a dinosaur, explode it
-        
-        // Particles everywhere
     }
 }
 

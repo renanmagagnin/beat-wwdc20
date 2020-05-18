@@ -78,6 +78,7 @@ extension Dinosaur {
         if let emitter = SKEmitterNode(fileNamed: "Trace.sks") {
             emitter.particleZPosition = ZPosition.Particle
             emitter.targetNode = self.planet.delegate as! GameScene
+            emitter.position.x = -size.width/2.5
             addChild(emitter)
             traceEmitter = emitter
         }

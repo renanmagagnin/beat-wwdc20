@@ -65,16 +65,16 @@ extension Song {
         let superstiçãoCaixa = Beat(soundEffectFileName: "snare_pozza.mp3", loop: [4, 12], bpm: 115, translation: superstiçãoTranslation, volume: 0.08)
         let superstiçãoBumbo = Beat(soundEffectFileName: "kick_pozzan.mp3", loop: [0, 6, 10], bpm: 115, translation: superstiçãoTranslation, volume: 0.4)
 
-        let superstiçãoHighHat = Beat(soundEffectFileName: "hihat_pozzan.mp3", loop: [0, 4 , 8, 12], bpm: 115, translation: superstiçãoTranslation)
+        let superstiçãoHighHat = Beat(soundEffectFileName: "hihat_pozzan.mp3", loop: [0, 4 , 8, 12], bpm: 115, translation: superstiçãoTranslation, volume: 0.15)
         
         let bass = AdditionalLayer(fileName: "superstição_baixo.mp3", volume: 0.8, delay: superstiçãoCaixa.eightNoteDuration * 3) // Aligned with the bumbo
         
         let guitarDelay = TimeInterval(superstiçãoCaixa.barDuration) * 2 + superstiçãoCaixa.eightNoteDuration * 3
-        let primaryGuitar = AdditionalLayer(fileName: "superstição_guitarra_base.mp3", volume: 0.4, delay: guitarDelay)
-        let secondaryGuitar = AdditionalLayer(fileName: "superstição_guitarras _secundarias.mp3", volume: 0.4, delay: guitarDelay)
+        let primaryGuitar = AdditionalLayer(fileName: "superstição_guitarra_base.mp3", volume: 0.3, delay: guitarDelay)
+        let secondaryGuitar = AdditionalLayer(fileName: "superstição_guitarras _secundarias.mp3", volume: 0.3, delay: guitarDelay)
         let vocals = AdditionalLayer(fileName: "superstição_voz.mp3", volume: 0.15, delay: guitarDelay)
         
-        let additionalLayers = [0: [bass], 1: [primaryGuitar, secondaryGuitar, vocals]]
+        let additionalLayers = [0: [bass], 1: [primaryGuitar, secondaryGuitar], 2: [vocals]]
         // TODO: Implement a system that supports customised timing of additional layers
         
         return Song(beats: [superstiçãoCaixa, superstiçãoBumbo, superstiçãoHighHat], additionalLayers: additionalLayers)

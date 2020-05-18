@@ -48,7 +48,7 @@ public class BasicScene: SKScene {
     var lastUpdateTime: TimeInterval = 0
 
     // PlanetDelegate
-    var waitingPlanet: Planet? = nil
+    var waitingPlanets: [Planet] = []
     var waitingAdditionalLayers: [AdditionalLayer] = []
     
     var completionWaitDuration: TimeInterval = 5
@@ -153,7 +153,7 @@ extension BasicScene: PlanetDelegate {
         if sender == planets[0] {
             sender.startRecording()
         } else {
-            waitingPlanet = sender
+            waitingPlanets.append(sender)
         }
     }
     
@@ -161,7 +161,7 @@ extension BasicScene: PlanetDelegate {
         if sender == planets[0] {
             sender.startPlaying()
         } else {
-            waitingPlanet = sender
+            waitingPlanets.append(sender)
         }
         
         // Enqueue new additional layers
@@ -177,8 +177,9 @@ extension BasicScene: PlanetDelegate {
     }
     
     func didStartPlayingCycle(_ sender: Planet) {
-        if let waitingPlanet = waitingPlanet {
-            
+        
+        // Handle any waiting planets
+        for waitingPlanet in waitingPlanets {
             switch waitingPlanet.state {
             case .active:
                 waitingPlanet.startRecording()
@@ -191,8 +192,8 @@ extension BasicScene: PlanetDelegate {
             default:
                 break
             }
-            self.waitingPlanet = nil
         }
+        waitingPlanets = []
         
         // Play and dequeue any waiting additional layers
         for layer in waitingAdditionalLayers {
@@ -219,7 +220,6 @@ extension BasicScene {
     }
     
     func destroyPlanet(_ planet: Planet) {
-        planet.explode()
         if let index = planets.firstIndex(of: planet) {
             planets.remove(at: index)
         }
@@ -291,7 +291,7 @@ extension BasicScene: SKPhysicsContactDelegate {
                 if planet == self.planets[0] {
                     planet.restartRecording()
                 } else {
-                    self.waitingPlanet = planet
+                    self.waitingPlanets.append(planet)
                 }
             }
             

@@ -23,6 +23,6 @@
 	<key>UserAutoImportedAuxiliaryModules</key>
 	<array/>
 	<key>UserModuleMode</key>
-	<string>Full</string>
+	<string>Limited</string>
 </dict>
 </plist>
