@@ -11,3 +11,7 @@ This playground book is a submission for the [WWDC20 Swift Student Challenge](ht
 - "Do I Wanna Know?" by Arctic Monkeys
 - "We Will Rock You" by Queen
 - "Superstição" and "Velho Hábito" by [Lista de Ausência](https://open.spotify.com/artist/5LLCiTzGrCPbcCZBGBqubv)
+
+## Previous Submissions
+- WWDC19: [Mindblower](https://github.com/renanmagagnin/mindblower-wwdc19)
+- WWDC18: [Orbs](https://github.com/renanmagagnin/orbs-wwdc18)
