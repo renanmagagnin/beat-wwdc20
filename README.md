@@ -15,3 +15,7 @@ This playground book is a submission for the [WWDC20 Swift Student Challenge](ht
 ## Previous Submissions
 - WWDC19: [Mindblower](https://github.com/renanmagagnin/mindblower-wwdc19)
 - WWDC18: [Orbs](https://github.com/renanmagagnin/orbs-wwdc18)
+
+## Screenshots
+![Screenshot1](Screenshot1.jpg)
+![Screenshot2](Screenshot2.jpg)
